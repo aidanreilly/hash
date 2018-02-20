@@ -8,20 +8,20 @@ var express = require('express');
 var app = express();
 var crypto = require('crypto');
 
- app.get('/newUser', (req, res) => {
-  let username = req.query.username || '';
-  const password = req.query.password || '';
+require('./hashFunction.js')
 
+app.get('/newUser', (req, res) => {
+  let username = req.query.username || '';
   username = username.replace(/[!@#$%^&*]/g, '');
 
-  if (!username || !password) {
+  if (!username) {
     return res.sendStatus(400);
 }
 
 const salt = crypto.randomBytes(128).toString('base64');
 const hash = crypto.createHmac('sha256', username, salt)
-                   .update(salt)
-                   .digest('hex');
+.update(salt)
+.digest('hex');
 
 username = { salt, hash };
 
@@ -29,6 +29,6 @@ console.log('hashed username = '+hash);
 res.sendStatus(200);
 });
 
- app.listen(8080, function () {
+app.listen(8080, function () {
   console.log('listening on port 8080!');
 });
